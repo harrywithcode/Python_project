@@ -1,0 +1,64 @@
+import simplegui
+
+# define global variables
+total_ticks = 0
+first_click = True
+A = 0
+B = 0
+C = 0
+D = 0
+win_count = 0
+# define helper function format that converts time
+# in tenths of seconds into formatted string A:BC.D
+def format(total_ticks):
+    global A,B,C,D
+    A = total_ticks//600
+    B = total_ticks%600/100
+    C = total_ticks%600/10%10
+    D = total_ticks%600%10 
+# define function that judge your level of stopping around 0.0, 5.0 ...
+def judge():
+    global win_count
+    if C==0 or C==5:
+        D=0
+        win_count = win_count + 1
+# define event handlers for buttons; "Start", "Stop", "Reset"
+def start():
+    timer.start()
+    
+def stop():
+    timer.stop()
+    judge()
+    
+def reset():
+    global total_ticks, win_count, A, B, C, D
+    total_ticks = 0
+    win_count = 0
+    A = B = C = D = 0
+
+# define event handler for timer with 0.1 sec interval
+def tick():
+    global total_ticks
+    format(total_ticks)
+    total_ticks = total_ticks + 1
+
+# define draw handler
+def draw(canvas):
+    global A, B, C, D
+    canvas.draw_text(str(A) + " : " + str(B)+str(C)+"."+str(D), [200, 250], 48, "White")
+    canvas.draw_text(str(win_count), [150,150],40,"White")
+    canvas.draw_text("If you can stop time on 0.0, 5.0, 10.0...,", [15,20], 24, "White")
+    canvas.draw_text("you win one point", [15,40], 24, "White")
+                    
+# create frame
+frame = simplegui.create_frame("watch",500,500)
+
+# register event handlers
+timer = simplegui.create_timer(100, tick)
+frame.add_button("start",start,100)
+frame.add_button("stop",stop,100)
+frame.add_button("reset",reset,100)
+frame.set_draw_handler(draw)
+# start frame
+frame.start()
+timer.start()
